@@ -3,6 +3,7 @@ package com.travis.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import com.travis.model.Student;
 @Repository
 public class StudentDaoImpl implements StudentDao {
 
+	@Autowired
 	private SessionFactory sessionFactory;
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -43,11 +45,14 @@ public class StudentDaoImpl implements StudentDao {
 	}
 	
 	public List<Student> getAllStudent() {
-		//return sessionFactory.getCurrentSession().createQuery("from Student").list();
-		List<Student> students=new ArrayList<Student>();
+		Session session = this.sessionFactory.openSession();
+		List<Student> personList = session.createQuery("from Student").list();
+		session.close();
+		return personList;
+		/*List<Student> students=new ArrayList<Student>();
 		students.add(new Student(1,"Travis","Le",1));
 		students.add(new Student(2,"Darryl","Le",1));
-		return students;
+		return students;*/
 	}
 
 }
