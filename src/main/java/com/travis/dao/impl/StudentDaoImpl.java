@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,40 +20,108 @@ public class StudentDaoImpl implements StudentDao {
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-    }
+    }   
+   
 	
 	@Override
 	public void add(Student student) {
 		// TODO Auto-generated method stub
-		sessionFactory.getCurrentSession().save(student);
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+
+		try
+		{
+			tx = session.beginTransaction();
+			session.save(student);
+			tx.commit();
+		}
+		catch (Exception e) {
+			   if (tx!=null) tx.rollback();
+			   e.printStackTrace(); 
+			} 
+		finally {
+			   session.close();
+			}		
 	}
 
 	@Override
-	public void edit(Student student) {
-		sessionFactory.getCurrentSession().update(student);
+	public void edit(Student student) {		
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
 
+		try
+		{
+			tx = session.beginTransaction();
+			session.update(student);
+			tx.commit();
+		}
+		catch (Exception e) {
+			   if (tx!=null) tx.rollback();
+			   e.printStackTrace(); 
+			} 
+		finally {
+			   session.close();
+			}		
+		
 	}
 
 	@Override
 	public void delete(int studentId) {
-		sessionFactory.getCurrentSession().delete(getStudent(studentId));
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+
+		try
+		{
+			tx = session.beginTransaction();
+			session.delete(getStudent(studentId));	
+			tx.commit();
+		}
+		catch (Exception e) {
+			   if (tx!=null) tx.rollback();
+			   e.printStackTrace(); 
+			} 
+		finally {
+			   session.close();
+			}				
 
 	}
 
 	@Override
 	public Student getStudent(int studentId) {
-		return (Student)sessionFactory.getCurrentSession().get(Student.class, studentId);
+		Session session = sessionFactory.openSession();
+		
+		try
+		{
+			session.get(Student.class, studentId);			
+		}
+		catch (Exception e) {
+			 
+			   e.printStackTrace(); 
+			} 
+		finally {
+			   session.close();
+			}			
+		return (Student)sessionFactory.openSession().get(Student.class, studentId);	
+		
 	}
 	
 	public List<Student> getAllStudent() {
-		Session session = this.sessionFactory.openSession();
-		List<Student> personList = session.createQuery("from Student").list();
-		session.close();
-		return personList;
-		/*List<Student> students=new ArrayList<Student>();
-		students.add(new Student(1,"Travis","Le",1));
-		students.add(new Student(2,"Darryl","Le",1));
-		return students;*/
+		
+		List<Student> personList=new ArrayList<Student>();
+		Session session = sessionFactory.openSession();
+		
+		try
+		{
+			personList=session.createQuery("from Student").list();	
+		}
+		catch (Exception e) {
+			 
+			   e.printStackTrace(); 
+			} 
+		finally {
+			   session.close();
+			}			
+		return personList;			
 	}
 
 }
