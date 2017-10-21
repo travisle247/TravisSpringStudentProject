@@ -109,18 +109,8 @@ public class StudentDaoImpl implements StudentDao {
 		
 		List<Student> personList=new ArrayList<Student>();
 		Session session = sessionFactory.openSession();
-		
-		try
-		{
-			personList=session.createQuery("from Student").list();	
-		}
-		catch (Exception e) {
-			 
-			   e.printStackTrace(); 
-			} 
-		finally {
-			   session.close();
-			}			
+		personList=session.createQuery("from student").list();		
+		session.close();				
 		return personList;			
 	}
 
